@@ -43,7 +43,7 @@ def detect_shapes():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-    print("Image downloaded successfully.")
+    app.logger.info("Image downloaded successfully.")
 
     # Convert to grayscale for thresholding
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -52,7 +52,7 @@ def detect_shapes():
     ref_gray = gray_image[ry1:ry2, rx1:rx2]
     avg_pixel_value = cv2.mean(ref_gray)[0] + 5
 
-    print("Average ref value:", avg_pixel_value)
+    app.logger.info("Average ref value:", avg_pixel_value)
 
 
     resp = {}
@@ -84,7 +84,7 @@ def detect_shapes():
             epsilon = 0.02 * cv2.arcLength(contour, True)
             approx = cv2.approxPolyDP(contour, epsilon, True)
 
-            print(f"Shape detected in zone {zone['name']} with area {cv2.contourArea(contour)}")
+            app.logger.info(f"Shape detected in zone {zone['name']} with area {cv2.contourArea(contour)}")
             # If a significant contour is found, mark the zone as True
             resp[zone["name"]] = True
 
@@ -97,7 +97,9 @@ def detect_shapes():
             break # Move to the next zone once a shape is found
 
     # save image with the timestamp in the name to /tmp
-    cv2.imwrite(f"/tmp/{np.datetime_as_string(np.datetime64('now'))}.png", image)
+    fname = f"/tmp/{np.datetime_as_string(np.datetime64('now'))}.png"
+    cv2.imwrite(fname, image)
+    app.logger.info(f"Image saved to {fname}")
     return jsonify(resp)
 
 if __name__ == '__main__':
