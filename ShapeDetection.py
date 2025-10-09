@@ -65,7 +65,7 @@ def detect_shapes():
     avg_pixel_value = int(cv2.mean(ref_gray)[0] + threshold)
 
     #cv2.rectangle(image, (rx1, ry1), (rx2, ry2), (255,255,0), 5)
-    rects += ((rx1, ry1), (rx2, ry2), (255,255,0), 5)
+    rects.append(((rx1, ry1), (rx2, ry2), (255,255,0), 5))
     app.logger.info(f"Average ref value: {avg_pixel_value}")
 
     resp = {}
@@ -78,7 +78,7 @@ def detect_shapes():
         resp[zone["name"]] = False
         x1, y1, x2, y2 = zone["region"]
         #cv2.rectangle(image, (x1, y1), (x2, y2), (255,255,0), 2)
-        rects += ((x1, y1), (x2, y2), (255,255,0), 2)
+        rects.append(((x1, y1), (x2, y2), (255,255,0), 2))
 
         zone_gray = gray_image[y1:y2, x1:x2]
         # Apply thresholding to the zone using its average as the threshold value
@@ -106,7 +106,7 @@ def detect_shapes():
             # Draw a rectangle around contour, save back to image
             x, y, w, h = cv2.boundingRect(approx)
             #cv2.rectangle(image, (x1 + x, y1 + y), (x1 + x + w, y1 + y + h), colours[ci], 2)
-            rects += ((x1 + x, y1 + y), (x1 + x + w, y1 + y + h), colours[ci], 2)
+            rects.append(((x1 + x, y1 + y), (x1 + x + w, y1 + y + h), colours[ci], 2))
             
 
             break # Move to the next zone once a shape is found
@@ -116,7 +116,7 @@ def detect_shapes():
     if save_img:
         image = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
         for rect in rects:
-            cv2.rectangle(image, rect[0], rect[1], rect[2], rect[3])
+            cv2.rectangle(image, *rect)
         fname = f"/tmp/{np.datetime_as_string(np.datetime64('now')).replace(':', '')}.png"
         cv2.imwrite(fname, image)
         app.logger.info(f"Image saved to {fname}")
