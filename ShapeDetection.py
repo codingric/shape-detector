@@ -50,6 +50,15 @@ def detect_shapes():
     # Convert to grayscale for thresholding
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
+    # Increase contrast by applying CLAHE (Contrast Limited Adaptive Histogram Equalization).
+    # This makes whites whiter and blacks blacker, which helps with thresholding.
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    gray_image = clahe.apply(gray_image)
+
+    # Convert the processed grayscale image back to a 3-channel BGR image
+    # so that colored rectangles can be drawn on it for visualization.
+    image = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
+
     rx1, ry1, rx2, ry2 = ref
     ref_gray = gray_image[ry1:ry2, rx1:rx2]
     avg_pixel_value = cv2.mean(ref_gray)[0] + 5
