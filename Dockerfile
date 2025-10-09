@@ -20,6 +20,7 @@ WORKDIR /app
 # Install only the runtime OS dependencies for OpenCV
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1-mesa-glx \
+    libwebp7 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy installed Python packages from the builder stage
@@ -32,4 +33,4 @@ COPY ShapeDetection.py .
 EXPOSE 8000
 
 # Command to run the application using Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "ShapeDetection:app"]
+CMD ["python3", "-m", "gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "ShapeDetection:app"]
