@@ -35,6 +35,7 @@ def detect_shapes():
     image_url = data['url']
     ref = data['ref']
     zones = data['zones']
+    threshold = data.get("threshold", 20)
     save_img = data.get("save_img", False)
     global_min_area = data.get("min_area", 1000)
 
@@ -62,7 +63,7 @@ def detect_shapes():
 
     rx1, ry1, rx2, ry2 = ref
     ref_gray = gray_image[ry1:ry2, rx1:rx2]
-    avg_pixel_value = int(cv2.mean(ref_gray)[0] + 16)
+    avg_pixel_value = int(cv2.mean(ref_gray)[0] + threshold)
 
     cv2.rectangle(image, (rx1, ry1), (rx2, ry2), (255,255,0), 5)
     app.logger.info(f"Average ref value: {avg_pixel_value}")
