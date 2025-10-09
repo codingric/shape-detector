@@ -54,6 +54,7 @@ def detect_shapes():
     ref_gray = gray_image[ry1:ry2, rx1:rx2]
     avg_pixel_value = cv2.mean(ref_gray)[0] + 5
 
+    cv2.rectangle(image, (rx1, ry1), (rx2, ry2), (255,255,255), 5)
     app.logger.info(f"Average ref value: {avg_pixel_value}")
 
 
@@ -93,6 +94,7 @@ def detect_shapes():
             # Draw a rectangle around contour, save back to image
             x, y, w, h = cv2.boundingRect(approx)
             cv2.rectangle(image, (x1 + x, y1 + y), (x1 + x + w, y1 + y + h), colours[ci], 2)
+            cv2.rectangle(image, (x1, y1), (x2, y2), colours[ci], 5)
             ci = (ci + 1) % 3
             
 
