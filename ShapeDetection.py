@@ -5,6 +5,8 @@ import requests
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
+app.logger.setLevel("INFO")
+
 
 @app.route('/', methods=['POST'])
 def detect_shapes():
