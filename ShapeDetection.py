@@ -54,7 +54,7 @@ def detect_shapes():
     ref_gray = gray_image[ry1:ry2, rx1:rx2]
     avg_pixel_value = cv2.mean(ref_gray)[0] + 5
 
-    app.logger.info("Average ref value:", avg_pixel_value)
+    app.logger.info(f"Average ref value: {avg_pixel_value}")
 
 
     resp = {}
