@@ -101,7 +101,7 @@ def detect_shapes():
             break # Move to the next zone once a shape is found
 
     # save image with the timestamp in the name to /tmp
-    fname = f"/tmp/{np.datetime_as_string(np.datetime64('now'))}.png"
+    fname = f"/tmp/{np.datetime_as_string(np.datetime64('now')).replace(':', '')}.png"
     cv2.imwrite(fname, image)
     app.logger.info(f"Image saved to {fname}")
     return jsonify(resp)
