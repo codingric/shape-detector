@@ -56,7 +56,7 @@ def detect_shapes():
 
     rx1, ry1, rx2, ry2 = ref
     ref_gray = gray_image[ry1:ry2, rx1:rx2]
-    avg_pixel_value = cv2.mean(ref_gray)[0] + 5
+    avg_pixel_value = cv2.mean(ref_gray)[0] + 10
 
     cv2.rectangle(image, (rx1, ry1), (rx2, ry2), (255,255,255), 5)
     app.logger.info(f"Average ref value: {avg_pixel_value}")
