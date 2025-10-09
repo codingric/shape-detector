@@ -23,7 +23,11 @@ def detect_shapes():
         ]
     }
     """
-    data = request.get_json()
+    try:
+        data = request.get_json()
+    except json.JSONDecodeError:
+        return jsonify({"error": "Invalid JSON data"}), 400
+
     app.logger.info(f"Payload received: {data}")
     if not data or 'url' not in data or 'ref' not in data or 'zones' not in data:
         return jsonify({"error": "Invalid request body. 'url', 'ref', and 'zones' are required."}), 400
