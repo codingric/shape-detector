@@ -67,6 +67,7 @@ def detect_shapes():
     for zone in zones:
         resp[zone["name"]] = False
         x1, y1, x2, y2 = zone["region"]
+        cv2.rectangle(image, (x1, y1), (x2, y2), colours[ci], 5)
 
         zone_gray = gray_image[y1:y2, x1:x2]
         # Apply thresholding to the zone using its average as the threshold value
@@ -94,7 +95,6 @@ def detect_shapes():
             # Draw a rectangle around contour, save back to image
             x, y, w, h = cv2.boundingRect(approx)
             cv2.rectangle(image, (x1 + x, y1 + y), (x1 + x + w, y1 + y + h), colours[ci], 2)
-            cv2.rectangle(image, (x1, y1), (x2, y2), colours[ci], 5)
             ci = (ci + 1) % 3
             
 
