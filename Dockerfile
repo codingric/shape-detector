@@ -1,25 +1,26 @@
 # ---- Builder Stage ----
-# This stage installs dependencies, including build-time tools.
-FROM python:3.9-alpine AS builder
-
-# Install OS-level dependencies needed to build opencv-python
-RUN apk add --no-cache build-base cmake linux-headers libjpeg-turbo-dev libpng-dev tiff-dev
+# Use a Debian-based slim image which has pre-compiled wheels for OpenCV,
+# avoiding the need for a lengthy compilation process.
+FROM python:3.9-slim-bookworm AS builder
 
 WORKDIR /app
 
 # Copy requirements and install Python packages
 COPY requirements.txt .
+# Using pre-compiled wheels makes this step significantly faster.
 RUN pip install --no-cache-dir -r requirements.txt
 
 
 # ---- Final Stage ----
 # This stage creates the lean, final image for runtime.
-FROM python:3.9-alpine
+FROM python:3.9-slim-bookworm
 
 WORKDIR /app
 
 # Install only the runtime OS dependencies for OpenCV
-RUN apk add --no-cache libjpeg-turbo libpng tiff
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1-mesa-glx \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy installed Python packages from the builder stage
 COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
