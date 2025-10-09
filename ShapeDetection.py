@@ -24,12 +24,14 @@ def detect_shapes():
     }
     """
     data = request.get_json()
+    app.logger.info(f"Payload received: {data}")
     if not data or 'url' not in data or 'ref' not in data or 'zones' not in data:
         return jsonify({"error": "Invalid request body. 'url', 'ref', and 'zones' are required."}), 400
 
     image_url = data['url']
     ref = data['ref']
     zones = data['zones']
+    save_img = data.get("save_img", False)
     global_min_area = data.get("min_area", 1000)
 
     try:
@@ -105,9 +107,10 @@ def detect_shapes():
         ci = (ci + 1) % 3
 
     # save image with the timestamp in the name to /tmp
-    fname = f"/tmp/{np.datetime_as_string(np.datetime64('now')).replace(':', '')}.png"
-    cv2.imwrite(fname, image)
-    app.logger.info(f"Image saved to {fname}")
+    if save_img:
+        fname = f"/tmp/{np.datetime_as_string(np.datetime64('now')).replace(':', '')}.png"
+        cv2.imwrite(fname, image)
+        app.logger.info(f"Image saved to {fname}")
     return jsonify(resp)
 
 if __name__ == '__main__':
