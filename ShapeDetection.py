@@ -95,10 +95,10 @@ def detect_shapes():
             # Draw a rectangle around contour, save back to image
             x, y, w, h = cv2.boundingRect(approx)
             cv2.rectangle(image, (x1 + x, y1 + y), (x1 + x + w, y1 + y + h), colours[ci], 2)
-            ci = (ci + 1) % 3
             
 
             break # Move to the next zone once a shape is found
+        ci = (ci + 1) % 3
 
     # save image with the timestamp in the name to /tmp
     fname = f"/tmp/{np.datetime_as_string(np.datetime64('now')).replace(':', '')}.png"
