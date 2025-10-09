@@ -58,7 +58,7 @@ def detect_shapes():
     ref_gray = gray_image[ry1:ry2, rx1:rx2]
     avg_pixel_value = int(cv2.mean(ref_gray)[0] + 16)
 
-    cv2.rectangle(image, (rx1, ry1), (rx2, ry2), (255,255,255), 5)
+    cv2.rectangle(image, (rx1, ry1), (rx2, ry2), (255,255,0), 5)
     app.logger.info(f"Average ref value: {avg_pixel_value}")
 
 
@@ -71,7 +71,7 @@ def detect_shapes():
     for zone in zones:
         resp[zone["name"]] = False
         x1, y1, x2, y2 = zone["region"]
-        cv2.rectangle(image, (x1, y1), (x2, y2), colours[ci], 5)
+        cv2.rectangle(image, (x1, y1), (x2, y2), (255,255,0), 2)
 
         zone_gray = gray_image[y1:y2, x1:x2]
         # Apply thresholding to the zone using its average as the threshold value
