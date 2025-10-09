@@ -41,7 +41,7 @@ def detect_shapes():
 
     try:
         # Download the image from the URL
-        response = requests.get(image_url, timeout=10, verify=False)
+        response = requests.get(image_url, timeout=10)
         response.raise_for_status()  # Raise an exception for bad status codes
         image_array = np.frombuffer(response.content, np.uint8)
         image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
