@@ -52,7 +52,7 @@ def detect_shapes():
 
     # Increase contrast by applying CLAHE (Contrast Limited Adaptive Histogram Equalization).
     # This makes whites whiter and blacks blacker, which helps with thresholding.
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    clahe = cv2.createCLAHE(clipLimit=5)
     gray_image = clahe.apply(gray_image)
 
     # Convert the processed grayscale image back to a 3-channel BGR image
