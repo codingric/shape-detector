@@ -84,9 +84,7 @@ def detect_shapes():
             epsilon = 0.02 * cv2.arcLength(contour, True)
             approx = cv2.approxPolyDP(contour, epsilon, True)
 
-            print(f"Shape detected in zone {zone['name']} with area {cv2.contourArea(contour)}"
-                  f" at location `{x1 + approx[0][0][0]}, {y1 + approx[0][0][1]}`. Number of vertices: {len(approx)}")"
-
+            print(f"Shape detected in zone {zone['name']} with area {cv2.contourArea(contour)}")
             # If a significant contour is found, mark the zone as True
             resp[zone["name"]] = True
 
