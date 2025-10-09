@@ -49,8 +49,6 @@ def detect_shapes():
 
     # Convert to grayscale for thresholding
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    gray_image = cv2.equalizeHist(gray_image)
-
 
     # Convert the processed grayscale image back to a 3-channel BGR image
     # so that colored rectangles can be drawn on it for visualization.
