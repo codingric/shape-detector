@@ -51,6 +51,7 @@ func AnalyzeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	response := AnalyzeResponse{Detections: detections, Image: svc.Base64()}
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
