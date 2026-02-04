@@ -1,36 +1,29 @@
 # ---- Builder Stage ----
 # Use a Debian-based slim image which has pre-compiled wheels for OpenCV,
 # avoiding the need for a lengthy compilation process.
-FROM python:3.9-slim-bookworm AS builder
+FROM golang:1.25.5-alpine AS builder
 
 WORKDIR /app
 
-# Copy requirements and install Python packages
-COPY requirements.txt .
-# Using pre-compiled wheels makes this step significantly faster.
-RUN pip install --no-cache-dir -r requirements.txt
+COPY go.* /app
+RUN go mod download
 
+COPY . .
+RUN CGO_ENABLED=0 go build -o shape-detector ./cmd/main.go
 
 # ---- Final Stage ----
 # This stage creates the lean, final image for runtime.
-FROM python:3.9-slim-bookworm
+FROM alpine:latest
+
 
 WORKDIR /app
 
 # Install only the runtime OS dependencies for OpenCV
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgl1-mesa-glx \
-    libwebp7 \
-    && rm -rf /var/lib/apt/lists/*
 
-# Copy installed Python packages from the builder stage
-COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
-
-# Copy the application code
-COPY ShapeDetection.py .
+COPY --from=builder /app/shape-detector /app/shape-detectors
 
 # Expose the port Gunicorn will run on
-EXPOSE 8000
+EXPOSE 8080
 
 # Command to run the application using Gunicorn
-CMD ["python3", "-m", "gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "ShapeDetection:app"]
+CMD ["/app/shape-detectors", "-p", "8080"]
