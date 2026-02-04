@@ -26,4 +26,4 @@ COPY --from=builder /app/shape-detector /app/shape-detectors
 EXPOSE 8080
 
 # Command to run the application using Gunicorn
-CMD ["/app/shape-detectors", "-p", "8080"]
+CMD ["/app/shape-detectors", "-port", "8080"]
