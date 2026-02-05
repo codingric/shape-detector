@@ -139,56 +139,39 @@ func (s *ImageService) Download() (err error) {
 
 func (s *ImageService) Adjust() error {
 	s.image = imaging.Grayscale(s.image)
-	pixelCount := uint64(s.image.Bounds().Dx() * s.image.Bounds().Dy())
-	bright := make([]float64, pixelCount)
-	i := 0
-	for x := 0; x < s.image.Bounds().Dx(); x++ {
-		for y := 0; y < s.image.Bounds().Dy(); y++ {
-			r, g, b, a := s.image.At(x, y).RGBA()
-			ra := float64(r) / float64(a)
-			ga := float64(g) / float64(a)
-			ba := float64(b) / float64(a)
-			br := (ra + ga + ba) / 3
-
-			// Using standard luminance formula: 0.299R + 0.587G + 0.114B
-			bright[i] = br
-			i += 1
-		}
-	}
-	//find median brightness
-	// mx, mn := 0.0, 1.0
-	// for _, v := range bright {
-	// 	if v > mx {
-	// 		mx = v
-	// 	}
-	// 	if v < mn {
-	// 		mn = v
-	// 	}
-	// }
-	median := Median(bright)
-
-	log.Debug().Float64("median", median).Msg("Median brightness calculated")
-
-	// Adjust contrast and brightness based on median
-	s.image = imaging.AdjustSigmoid(s.image, math.Max(median, 0.3), 50)
-
 	return nil
 }
 
 func (s *ImageService) Mask() error {
 	bounds := s.image.Bounds()
 	mask := imaging.New(bounds.Dx(), bounds.Dy(), image.Black)
+	//mask := imaging.AdjustContrast(s.image, -100)
 
 	for _, zone := range s.zones {
 		rect := image.Rect(zone.X1, zone.Y1, zone.X2, zone.Y2)
 		cropped := imaging.Crop(s.image, rect)
+		px := uint64(cropped.Bounds().Dx() * cropped.Bounds().Dy())
+		bright := make([]float64, px)
+		i := 0
+		for x := 0; x < cropped.Bounds().Dx(); x++ {
+			for y := 0; y < cropped.Bounds().Dy(); y++ {
+				r, g, b, a := cropped.At(x, y).RGBA()
+				ra := float64(r) / float64(a)
+				ga := float64(g) / float64(a)
+				ba := float64(b) / float64(a)
+				br := (ra + ga + ba) / 3
 
-		//find median brightness for the crop
-
+				// Using standard luminance formula: 0.299R + 0.587G + 0.114B
+				bright[i] = br
+				i += 1
+			}
+		}
+		median := Median(bright)
+		cropped = imaging.AdjustSigmoid(cropped, math.Max(median, 0.3), 50)
 		mask = imaging.Paste(mask, cropped, image.Pt(zone.X1, zone.Y1))
 	}
-	s.image = imaging.AdjustSigmoid(mask, 0.5, 50)
 	log.Info().Msg("Image masked")
+	s.image = mask
 
 	return nil
 }
