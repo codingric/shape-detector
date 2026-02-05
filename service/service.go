@@ -166,8 +166,8 @@ func (s *ImageService) Mask() error {
 				i += 1
 			}
 		}
-		median := Median(bright)
-		cropped = imaging.AdjustSigmoid(cropped, math.Max(median, 0.3), 50)
+		median := Median(bright) * 1.1
+		cropped = imaging.AdjustSigmoid(cropped, math.Max(median, 0.3), 100)
 		mask = imaging.Paste(mask, cropped, image.Pt(zone.X1, zone.Y1))
 	}
 	log.Info().Msg("Image masked")
