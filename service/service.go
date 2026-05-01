@@ -24,6 +24,7 @@ type ImageAnalyzer interface {
 	Mask() error
 	Adjust() error
 	SaveAs(string) error
+	WriteTo(io.Writer) error
 	Base64() string
 }
 
@@ -187,6 +188,13 @@ func (s *ImageService) SaveAs(filename string) error {
 	}
 	f.Close()
 	return nil
+}
+
+func (s *ImageService) WriteTo(w io.Writer) error {
+	if s.image == nil {
+		return fmt.Errorf("no image loaded")
+	}
+	return imaging.Encode(w, s.image, imaging.JPEG)
 }
 
 func NewImageService(ctx context.Context, url string, zones ...IAZone) ImageAnalyzer {

@@ -61,8 +61,47 @@ func AnalyzeHandler(w http.ResponseWriter, r *http.Request) {
 	log.Info().Interface("response", response).Msg("Response sent")
 }
 
+func MaskedHandler(w http.ResponseWriter, r *http.Request) {
+	submitted := AnalyzeRequest{}
+	err := json.NewDecoder(r.Body).Decode(&submitted)
+	if err != nil {
+		log.Error().Err(err).Msg("Request error")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	zones := make([]service.IAZone, len(submitted.Zones))
+	for i, zone := range submitted.Zones {
+		zones[i] = service.IAZone{
+			X1:        zone.Coords[0],
+			Y1:        zone.Coords[1],
+			X2:        zone.Coords[2],
+			Y2:        zone.Coords[3],
+			Name:      zone.Name,
+			Threshold: zone.Threshold,
+		}
+	}
+	svc := service.NewImageService(r.Context(), submitted.Url, zones...)
+	_, err = svc.Analyze()
+	if err != nil {
+		log.Error().Err(err).Msg("Analyze error")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "image/jpeg")
+	err = svc.WriteTo(w)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to write image")
+		return
+	}
+
+	log.Info().Msg("Masked image sent")
+}
+
 func StartServer(port string) error {
 	http.HandleFunc("/analyze", AnalyzeHandler)
+	http.HandleFunc("/masked", MaskedHandler)
 	log.Info().Str("port", port).Msg("Started server")
 	return http.ListenAndServe(":"+port, nil)
 }
