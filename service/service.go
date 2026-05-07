@@ -140,8 +140,30 @@ func (s *ImageService) Download() (err error) {
 
 func (s *ImageService) Adjust() error {
 	s.image = imaging.Grayscale(s.image)
-	s.image = imaging.AdjustSigmoid(s.image, 0.87, 40)
+	max := maxBrightness(s.image)
+	midpoint := max / 2
+
+	s.image = imaging.AdjustSigmoid(s.image, midpoint, 40)
+
 	return nil
+}
+
+func maxBrightness(img image.Image) float64 {
+	bounds := img.Bounds()
+	max := 0.0
+	for x := 0; x < bounds.Dx(); x++ {
+		for y := 0; y < bounds.Dy(); y++ {
+			r, g, b, a := img.At(x, y).RGBA()
+			ra := float64(r) / float64(a)
+			ga := float64(g) / float64(a)
+			ba := float64(b) / float64(a)
+			br := (ra + ga + ba) / 3
+			if br > max {
+				max = br
+			}
+		}
+	}
+	return max
 }
 
 func (s *ImageService) Mask() error {
