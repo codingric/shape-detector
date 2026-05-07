@@ -140,13 +140,13 @@ func (s *ImageService) Download() (err error) {
 
 func (s *ImageService) Adjust() error {
 	s.image = imaging.Grayscale(s.image)
+	s.image = imaging.AdjustSigmoid(s.image, 0.87, 40)
 	return nil
 }
 
 func (s *ImageService) Mask() error {
 	bounds := s.image.Bounds()
 	mask := imaging.New(bounds.Dx(), bounds.Dy(), image.Black)
-	//mask := imaging.AdjustContrast(s.image, -100)
 
 	for _, zone := range s.zones {
 		rect := image.Rect(zone.X1, zone.Y1, zone.X2, zone.Y2)
