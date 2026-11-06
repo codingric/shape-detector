@@ -143,7 +143,7 @@ func (s *ImageService) Adjust() error {
 	max := maxBrightness(s.image)
 	midpoint := max / 2
 
-	s.image = imaging.AdjustSigmoid(s.image, midpoint, 40)
+	s.image = imaging.AdjustSigmoid(s.image, midpoint*1.1, 40)
 
 	return nil
 }
